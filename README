@@ -63,5 +63,36 @@ SELECT DEPARTMENT, COUNT(WORKER_ID) AS Total_Employees FROM Worker GROUP BY DEPA
 SELECT DISTINCT DEPARTMENT, (SELECT COUNT(*) FROM Worker AS W2 WHERE W2.DEPARTMENT = W1.DEPARTMENT) AS Total_Employees FROM Worker AS W1 ORDER BY DEPARTMENT;
 SELECT 'HR' AS DEPARTMENT, COUNT(WORKER_ID) AS Total_Employees FROM Worker WHERE DEPARTMENT = 'HR' UNION SELECT 'Admin' AS DEPARTMENT, COUNT(WORKER_ID) AS Total_Employees FROM Worker WHERE DEPARTMENT = 'Admin' UNION SELECT 'Account' AS DEPARTMENT, COUNT(WORKER_ID) AS Total_Employees FROM Worker WHERE DEPARTMENT = 'Account' ORDER BY DEPARTMENT;
 
--- Finding Departments with Min and Max Employees
-(SELECT DEPARTMENT, COUNT(DEPARTMENT) AS total_employees FROM Worker GROUP BY DEPARTMENT ORDER BY total_employees ASC LIMIT 1) UNION ALL (SELECT DEPARTMENT, COUNT(DEPARTMENT) AS total_employees FROM Worker GROUP BY DEPARTMENT ORDER BY total_employees DESC LIMIT 1);
+#Feb 13th:
+
+--- Get all Worker details ordered by FIRST_NAME in ascending order
+SELECT * FROM Worker ORDER BY FIRST_NAME ASC;
+
+--- Get all Worker details ordered by FIRST_NAME (Ascending) and DEPARTMENT (Descending)
+SELECT * FROM Worker ORDER BY FIRST_NAME ASC, DEPARTMENT DESC;
+
+--- Get Worker details excluding first names "Vipul" and "Satish"
+SELECT * FROM Worker WHERE FIRST_NAME NOT IN ('Vipul', 'Satish');
+
+--- Get Workers whose FIRST_NAME ends with ‘h’ and contains six alphabets
+SELECT * FROM Worker WHERE FIRST_NAME LIKE '_h';
+
+--- Count of employees working in the 'Admin' department
+SELECT COUNT(*) FROM Worker WHERE DEPARTMENT = 'Admin';
+
+--- Get Worker names with salaries between 50000 and 100000
+SELECT FIRST_NAME, LAST_NAME FROM Worker WHERE SALARY BETWEEN 50000 AND 100000;
+
+--- Get the number of workers for each department in descending order
+SELECT DEPARTMENT, COUNT(*) AS Worker_Count FROM Worker GROUP BY DEPARTMENT ORDER BY Worker_Count DESC;
+
+--- Get the 5th highest salary without using TOP or LIMIT
+SELECT DISTINCT SALARY 
+FROM Worker W1 
+WHERE 4 = (SELECT COUNT(DISTINCT SALARY) FROM Worker W2 WHERE W2.SALARY > W1.SALARY);
+
+--- Get the list of employees with the same salary
+SELECT SALARY, GROUP_CONCAT(FIRST_NAME, ' ', LAST_NAME) AS Employees 
+FROM Worker 
+GROUP BY SALARY 
+HAVING COUNT(*) > 1;
