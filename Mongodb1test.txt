@@ -1,0 +1,60 @@
+1. How do you find all documents where the field "item" is "Mochas"?
+--> db.collection.find({ item: "Mochas" })
+
+2. How do you find all items who are less than 15 of price?
+--> db.collection.find({ price: { $lt: 15 } })
+
+3. How do you find items who are either less than 10 or greater than 20?
+--> db.collection.find({ $or: [{ price: { $lt: 10 } }, { price: { $gt: 20 } }] })
+
+4. How do you find all documents where the quantity field exists?
+-->db.collection.find({ quantity: { $exists: true } })
+
+5.How do you find all documents where the color array contains the value "white"?
+--> db.collection.find({ color: "white" })
+
+6. How do you update the ram of the user named "xTablet" to 24?
+--> db.collection.updateOne(
+    { name: "xTablet" },
+    { $set: { ram: 24 } }
+)
+
+7. How do you find all products and only return their 'spec' field?
+--> db.collection.find({}, { spec: 1, _id: 0 })
+
+8. How do you find all products and sort them by their price in descending order?
+--> db.collection.find().sort({ price: -1 })
+
+9.How do you find the first 2 products, skipping the first one?
+--> db.collection.find().skip(1).limit(2)
+
+10. How do you find all users whose name starts with the letter "S" and price should be greater of 700?
+--> db.collection.find({ name: { $regex: "^S" }, price: { $gt: 700 } })
+
+11. How do you calculate the total price of all items?
+--> db.collection.aggregate([
+    { $group: { _id: null, totalPrice: { $sum: "$price" } } }
+])
+
+12.How do you project only the size field for each items?
+--> db.collection.find({}, { size: 1, _id: 0 })
+
+13.How do you find items who are Tall size &  group them by item wise?
+--> db.collection.aggregate([
+    { $match: { size: "Tall" } },  // Filter items with size "Tall"
+    { $group: { _id: "$item", count: { $sum: 1 } } }  // Group by item and count occurrences
+])
+
+14. How do you find the second item when sorted by price in ascending order?
+--> db.collection.find().sort({ price: 1 }).skip(1).limit(1)
+
+15. How do you group by items and calculate the total number of items and average price in a single aggregation?
+--> db.collection.aggregate([
+    { $group: { 
+        _id: "$item", 
+        totalCount: { $sum: 1 }, 
+        avgPrice: { $avg: "$price" } 
+    } }
+])
+
+
