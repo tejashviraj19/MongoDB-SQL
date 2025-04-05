@@ -100,74 +100,205 @@ HAVING COUNT(*) > 1;
 
 #March 3rd
 
-create table vitBhopal (id int primary key, name varchar(20) not null, department varchar(25) not null); insert into vitbhopal values (104,'Karthik','cs'),(103,'Arun','cs');
-create table vit (id int primary key, name varchar(20) not null, college varchar(25) not null); insert into vit values (104,'Karthik','chennai'),(103,'Arun','bhopal'); select * from vit;
+-- Creating tables for university student info
+CREATE TABLE Students_Bhopal (
+    id INT PRIMARY KEY,
+    name VARCHAR(20) NOT NULL,
+    department VARCHAR(25) NOT NULL
+);
 
-select * from vitbhopal;
+INSERT INTO Students_Bhopal VALUES
+    (104, 'Karthik', 'CS'),
+    (103, 'Arun', 'CS');
 
-select name as WinnerOfTheYear from vitbhopal where id = (select id from vit where college='bhopal');
+CREATE TABLE Students (
+    id INT PRIMARY KEY,
+    name VARCHAR(20) NOT NULL,
+    college VARCHAR(25) NOT NULL
+);
 
-select * from worker;
+INSERT INTO Students VALUES
+    (104, 'Karthik', 'Chennai'),
+    (103, 'Arun', 'Bhopal');
 
-CREATE DATABASE ORG1236; use org1236; CREATE TABLE Worker ( WORKER_ID INT NOT NULL PRIMARY KEY AUTO_INCREMENT, FIRST_NAME CHAR(25), LAST_NAME CHAR(25), SALARY INT(15), JOINING_DATE DATETIME, DEPARTMENT CHAR(25) );
+-- Fetching all records
+SELECT * FROM Students_Bhopal;
+SELECT * FROM Students;
 
-INSERT INTO Worker (WORKER_ID, FIRST_NAME, LAST_NAME, SALARY, JOINING_DATE, DEPARTMENT) VALUES (001, 'Monika', 'Arora', 100000, '14-02-20 09.00.00', 'HR'), (002, 'Niharika', 'Verma', 80000, '14-06-11 09.00.00', 'Admin'), (003, 'Vishal', 'Singhal', 300000, '14-02-20 09.00.00', 'HR'), (004, 'Amitabh', 'Singh', 500000, '14-02-20 09.00.00', 'Admin'), (005, 'Vivek', 'Bhati', 500000, '14-06-11 09.00.00', 'Admin'), (006, 'Vipul', 'Diwan', 200000, '14-06-11 09.00.00', 'Account'), (007, 'Satish', 'Kumar', 75000, '14-01-20 09.00.00', 'Account'), (008, 'Geetika', 'Chauhan', 90000, '14-04-11 09.00.00', 'Admin');
+-- Nested query: Who is from Bhopal?
+SELECT name AS WinnerOfTheYear
+FROM Students_Bhopal
+WHERE id = (
+    SELECT id FROM Students WHERE college = 'Bhopal'
+);
 
-CREATE TABLE Bonus ( WORKER_REF_ID INT, BONUS_AMOUNT INT(10), BONUS_DATE DATETIME, FOREIGN KEY (WORKER_REF_ID) REFERENCES Worker(WORKER_ID) ON DELETE CASCADE );
+-- Organization database and employee table
+CREATE DATABASE IF NOT EXISTS OrgData;
+USE OrgData;
 
-INSERT INTO Bonus (WORKER_REF_ID, BONUS_AMOUNT, BONUS_DATE) VALUES (001, 5000, '16-02-20'), (002, 3000, '16-06-11'), (003, 4000, '16-02-20'), (001, 4500, '16-02-20'), (002, 3500, '16-06-11'); CREATE TABLE Title ( WORKER_REF_ID INT, WORKER_TITLE CHAR(25), AFFECTED_FROM DATETIME, FOREIGN KEY (WORKER_REF_ID) REFERENCES Worker(WORKER_ID) ON DELETE CASCADE );
+CREATE TABLE Employees (
+    EmpID INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    FirstName CHAR(25),
+    LastName CHAR(25),
+    Salary INT(10),
+    JoiningDate DATETIME,
+    Department CHAR(25)
+);
 
-INSERT INTO Title (WORKER_REF_ID, WORKER_TITLE, AFFECTED_FROM) VALUES (001, 'Manager', '2016-02-20 00:00:00'), (002, 'Executive', '2016-06-11 00:00:00'), (008, 'Executive', '2016-06-11 00:00:00'), (005, 'Manager', '2016-06-11 00:00:00'), (004, 'Asst. Manager', '2016-06-11 00:00:00'), (007, 'Executive', '2016-06-11 00:00:00'), (006, 'Lead', '2016-06-11 00:00:00'), (003, 'Lead', '2016-06-11 00:00:00');
+-- Insert employee records
+INSERT INTO Employees (EmpID, FirstName, LastName, Salary, JoiningDate, Department) VALUES
+(1, 'Monika', 'Arora', 100000, '2020-02-14 09:00:00', 'HR'),
+(2, 'Niharika', 'Verma', 80000, '2011-06-14 09:00:00', 'Admin'),
+(3, 'Vishal', 'Singhal', 300000, '2020-02-14 09:00:00', 'HR'),
+(4, 'Amitabh', 'Singh', 500000, '2020-02-14 09:00:00', 'Admin'),
+(5, 'Vivek', 'Bhati', 500000, '2011-06-14 09:00:00', 'Admin'),
+(6, 'Vipul', 'Diwan', 200000, '2011-06-14 09:00:00', 'Account'),
+(7, 'Satish', 'Kumar', 75000, '2020-01-14 09:00:00', 'Account'),
+(8, 'Geetika', 'Chauhan', 90000, '2011-04-14 09:00:00', 'Admin');
 
-SELECT department, COUNT() AS departmentCount FROM worker GROUP BY department HAVING COUNT() = ( SELECT MAX(departmentCount) FROM ( SELECT COUNT(*) AS departmentCount FROM worker GROUP BY department ) AS subquery order by department ); -- use offset instead
+-- Bonuses
+CREATE TABLE Bonuses (
+    EmpRefID INT,
+    BonusAmount INT,
+    BonusDate DATETIME,
+    FOREIGN KEY (EmpRefID) REFERENCES Employees(EmpID) ON DELETE CASCADE
+);
 
-SELECT DEPARTMENT FROM Worker GROUP BY DEPARTMENT HAVING COUNT(*) < 5;
+INSERT INTO Bonuses VALUES
+(1, 5000, '2020-02-16'),
+(2, 3000, '2011-06-16'),
+(3, 4000, '2020-02-16'),
+(1, 4500, '2020-02-16'),
+(2, 3500, '2011-06-16');
 
-select department, count(department) as depCount from worker group by department order by depCount desc limit 5;
+-- Titles
+CREATE TABLE JobTitles (
+    EmpRefID INT,
+    Title CHAR(25),
+    EffectiveFrom DATETIME,
+    FOREIGN KEY (EmpRefID) REFERENCES Employees(EmpID) ON DELETE CASCADE
+);
 
-create table student ( s_id int primary key, s_name varchar(25) not null, s_department varchar(25) not null );
+INSERT INTO JobTitles VALUES
+(1, 'Manager', '2016-02-20 00:00:00'),
+(2, 'Executive', '2016-06-11 00:00:00'),
+(8, 'Executive', '2016-06-11 00:00:00'),
+(5, 'Manager', '2016-06-11 00:00:00'),
+(4, 'Asst. Manager', '2016-06-11 00:00:00'),
+(7, 'Executive', '2016-06-11 00:00:00'),
+(6, 'Lead', '2016-06-11 00:00:00'),
+(3, 'Lead', '2016-06-11 00:00:00');
 
-insert into student values (1001,"Jayanth","ECE"),(1002,"Praveen","CSE"),(1003,"Logesh","Mech"),(1006,'karthick','Aero'),(1007,"Mahesh","Civil");
+-- Department with max workers
+SELECT Department, COUNT(*) AS DeptCount
+FROM Employees
+GROUP BY Department
+HAVING COUNT(*) = (
+    SELECT MAX(DeptCount) FROM (
+        SELECT COUNT(*) AS DeptCount FROM Employees GROUP BY Department
+    ) AS DeptStats
+);
 
-select * from student;
+-- Departments with fewer than 5 employees
+SELECT Department
+FROM Employees
+GROUP BY Department
+HAVING COUNT(*) < 5;
 
-create table VIT( s_id int primary key, s_cgpa varchar(5) not null ); insert into vit values (1001,'7.2'),(1002,'8.6'),(1007,'9.25'); select * from vit;
+-- Top departments
+SELECT Department, COUNT(*) AS Total
+FROM Employees
+GROUP BY Department
+ORDER BY Total DESC
+LIMIT 5;
 
-select * from student cross join vit;
+-- Student-related tables
+CREATE TABLE StudentInfo (
+    StudentID INT PRIMARY KEY,
+    Name VARCHAR(25) NOT NULL,
+    Dept VARCHAR(25) NOT NULL
+);
 
-select * from student inner join vit where student.s_id=vit.s_id;
+INSERT INTO StudentInfo VALUES
+(1001, 'Jayanth', 'ECE'),
+(1002, 'Praveen', 'CSE'),
+(1003, 'Logesh', 'Mech'),
+(1006, 'Karthick', 'Aero'),
+(1007, 'Mahesh', 'Civil');
 
-select * from student natural join vit;
+CREATE TABLE AcademicInfo (
+    StudentID INT PRIMARY KEY,
+    CGPA VARCHAR(5) NOT NULL
+);
 
-select * from student left outer join vit on (student.s_id=vit.s_id); select * from student right outer join vit on (student.s_id=vit.s_id); -- full outer join not supported;
+INSERT INTO AcademicInfo VALUES
+(1001, '7.2'),
+(1002, '8.6'),
+(1007, '9.25');
 
-SELECT * FROM Worker INNER JOIN Bonus ON WORKER_ID = WORKER_REF_ID UNION SELECT * FROM Worker INNER JOIN Title ON WORKER_ID = WORKER_REF_ID;
+-- Joins
+SELECT * FROM StudentInfo CROSS JOIN AcademicInfo;
+SELECT * FROM StudentInfo INNER JOIN AcademicInfo ON StudentInfo.StudentID = AcademicInfo.StudentID;
+SELECT * FROM StudentInfo NATURAL JOIN AcademicInfo;
+SELECT * FROM StudentInfo LEFT JOIN AcademicInfo ON StudentInfo.StudentID = AcademicInfo.StudentID;
+SELECT * FROM StudentInfo RIGHT JOIN AcademicInfo ON StudentInfo.StudentID = AcademicInfo.StudentID;
 
-SELECT w.*, b.BONUS_AMOUNT, b.BONUS_DATE, t.WORKER_TITLE, t.AFFECTED_FROM FROM Worker w LEFT JOIN Bonus b ON w.WORKER_ID = b.WORKER_REF_ID LEFT JOIN Title t ON w.WORKER_ID = t.WORKER_REF_ID;
+-- Merging Employee tables with UNION
+SELECT * FROM Employees INNER JOIN Bonuses ON EmpID = EmpRefID
+UNION
+SELECT * FROM Employees INNER JOIN JobTitles ON EmpID = EmpRefID;
 
-SELECT w.*, b.BONUS_AMOUNT, b.BONUS_DATE, t.WORKER_TITLE, t.AFFECTED_FROM FROM Worker w INNER JOIN Bonus b ON w.WORKER_ID = b.WORKER_REF_ID INNER JOIN Title t ON w.WORKER_ID = t.WORKER_REF_ID WHERE t.WORKER_TITLE = 'Manager';
+-- All data with LEFT JOIN
+SELECT e.*, b.BonusAmount, b.BonusDate, t.Title, t.EffectiveFrom
+FROM Employees e
+LEFT JOIN Bonuses b ON e.EmpID = b.EmpRefID
+LEFT JOIN JobTitles t ON e.EmpID = t.EmpRefID;
 
-use JBSQL1; CREATE DATABASE JBSQL1; CREATE table Customer ( FirstName varchar(50), LastName varchar(50), Age int );
+-- Managers only
+SELECT e.*, b.BonusAmount, b.BonusDate, t.Title, t.EffectiveFrom
+FROM Employees e
+JOIN Bonuses b ON e.EmpID = b.EmpRefID
+JOIN JobTitles t ON e.EmpID = t.EmpRefID
+WHERE t.Title = 'Manager';
 
-INSERT INTO Customer (FirstName, LastName, Age, City) VALUES ('Joey', 'Tribiani', 40, 'NewYork'), ('Chandler', 'Bing', 41, 'NewYork'), ('Ross', 'Geller', 42, 'NewYork'), ('Phoebe', 'Buffet', 43, 'NewYork'), ('Rachel', 'Something', 44, 'NewYork'), ('Monica', 'Geller', 45, 'NewYork');
+-- Customer & product tables
+CREATE DATABASE IF NOT EXISTS ShopDB;
+USE ShopDB;
 
-SELECT * FROM Customer where FirstName like '%o%' and LastName like '%e%'; -- we can use like with wildchars like %;
+CREATE TABLE Customer (
+    ID INT PRIMARY KEY AUTO_INCREMENT,
+    FirstName VARCHAR(25),
+    LastName VARCHAR(25),
+    Age INT,
+    City VARCHAR(50)
+);
 
--- update update Customer set age=41 where FirstName like '%o%' and LastName like '%e%';
+INSERT INTO Customer (FirstName, LastName, Age, City) VALUES
+('Joey', 'Tribiani', 40, 'NewYork'),
+('Chandler', 'Bing', 41, 'NewYork'),
+('Ross', 'Geller', 42, 'NewYork'),
+('Phoebe', 'Buffet', 43, 'NewYork'),
+('Rachel', 'Something', 44, 'NewYork'),
+('Monica', 'Geller', 45, 'NewYork');
 
--- DELETE Customer will delete all data in table -- DELETE Customer -- where FirstName='something' -- and LastName='something';
+-- Filtering customers using LIKE
+SELECT * FROM Customer WHERE FirstName LIKE '%o%' AND LastName LIKE '%e%';
 
--- add a column alter table Customer add City varchar(50);
+-- Update city (already exists so won't fail)
+UPDATE Customer SET City = 'NewYork';
 
-update Customer set City='NewYork';
+-- Dropping and recreating tables
+DROP TABLE IF EXISTS Products;
 
-drop table Customer;
+CREATE TABLE Products (
+    ID INT PRIMARY KEY AUTO_INCREMENT,
+    ProductName VARCHAR(50),
+    Price FLOAT
+);
 
-create table Customer ( Id int primary key auto_increment, FirstName varchar(25), LastName varchar(25), Age int, City varchar(50) );
-select * from Customer;
-create table Products ( id int primary key auto_increment, ProductName varchar(50) );
-select * from products;
-drop table products;
-insert into products (ProductName) values ('Baseball'), ('FootBall');
-alter table products add Price float;
-update products set Price=69.96;
+INSERT INTO Products (ProductName, Price) VALUES
+('Baseball', 69.96),
+('Football', 69.96);
+
+SELECT * FROM Products;
+
