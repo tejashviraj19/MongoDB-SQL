@@ -302,3 +302,69 @@ INSERT INTO Products (ProductName, Price) VALUES
 
 SELECT * FROM Products;
 
+--- Get all Worker details ordered by FIRST_NAME in ascending order
+SELECT * FROM Worker ORDER BY FIRST_NAME ASC;
+
+--- Get all Worker details ordered by FIRST_NAME (Ascending) and DEPARTMENT (Descending)
+SELECT * FROM Worker ORDER BY FIRST_NAME ASC, DEPARTMENT DESC;
+
+--- Get Worker details excluding first names "Vipul" and "Satish"
+SELECT * FROM Worker WHERE FIRST_NAME NOT IN ('Vipul', 'Satish');
+
+--- Get Workers whose FIRST_NAME ends with ‘h’ and contains six alphabets
+SELECT * FROM Worker WHERE FIRST_NAME LIKE '_h';
+
+--- Count of employees working in the 'Admin' department
+SELECT COUNT(*) FROM Worker WHERE DEPARTMENT = 'Admin';
+
+--- Get Worker names with salaries between 50000 and 100000
+SELECT FIRST_NAME, LAST_NAME FROM Worker WHERE SALARY BETWEEN 50000 AND 100000;
+
+--- Get the number of workers for each department in descending order
+SELECT DEPARTMENT, COUNT(*) AS Worker_Count FROM Worker GROUP BY DEPARTMENT ORDER BY Worker_Count DESC;
+
+--- Get the 5th highest salary without using TOP or LIMIT
+SELECT DISTINCT SALARY 
+FROM Worker W1 
+WHERE 4 = (SELECT COUNT(DISTINCT SALARY) FROM Worker W2 WHERE W2.SALARY > W1.SALARY);
+
+--- Get the list of employees with the same salary
+SELECT SALARY, GROUP_CONCAT(FIRST_NAME, ' ', LAST_NAME) AS Employees 
+FROM Worker 
+GROUP BY SALARY 
+HAVING COUNT(*) > 1;
+
+
+-- Creating tables for university student info
+CREATE TABLE Students_Bhopal (
+    id INT PRIMARY KEY,
+    name VARCHAR(20) NOT NULL,
+    department VARCHAR(25) NOT NULL
+);
+
+INSERT INTO Students_Bhopal VALUES
+    (104, 'Karthik', 'CS'),
+    (103, 'Arun', 'CS');
+
+CREATE TABLE Students (
+    id INT PRIMARY KEY,
+    name VARCHAR(20) NOT NULL,
+    college VARCHAR(25) NOT NULL
+);
+
+INSERT INTO Students VALUES
+    (104, 'Karthik', 'Chennai'),
+    (103, 'Arun', 'Bhopal');
+
+-- Fetching all records
+SELECT * FROM Students_Bhopal;
+SELECT * FROM Students;
+
+-- Nested query: Who is from Bhopal?
+SELECT name AS WinnerOfTheYear
+FROM Students_Bhopal
+WHERE id = (
+    SELECT id FROM Students WHERE college = 'Bhopal'
+);
+
+-- Organization database and employee table
